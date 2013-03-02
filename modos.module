@@ -1,3 +1,47 @@
 <?php
 
+/**
+ * Implements hook_page_alter().
+ */
+function modos_page_alter() {
+  if ($alter = _modos_alter_get()) {
+    if ($alter['page_title'] && $purl = vsite_get_purl()) {
+      $request_path = substr(request_path(), strlen($purl) + 1);
+      foreach ($alter['page_title'] as $pattern => $title) {
+        if (drupal_match_path($request_path, $pattern)) {
+          drupal_set_title($title);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * 
+ */
+function _modos_alter_get($purl = NULL) {
+  if (!$purl) {
+    $purl = vsite_get_purl();
+  }
+  if ($alter = _modos_alter_query($purl)) {
+    return $alter;
+  }
+  return FALSE;
+}
+
+/**
+ *
+ */
+function _modos_alter_query($purl) {
+  $return = array();
+  switch ($purl) {
+    case 'petersnoad':
+      $return['page_title'] = array(
+        'publications' => t('Works'),
+        'calendar/past_events' => t('Events: Play By Play'),
+      );
+      break;
+  }
+  return empty($return) ? FALSE : $return;
+}
 
