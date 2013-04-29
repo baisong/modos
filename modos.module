@@ -3,10 +3,17 @@
 /**
  * Implements hook_page_alter().
  */
-function modos_page_alter() {
+function modos_page_alter(&$page) {
   if ($alter = _modos_alter_get()) {
+    if ($alter['hide_messages']) {
+      $page['#show_messages'] = FALSE;
+    }
     if ($alter['page_title'] && $purl = vsite_get_purl()) {
-      $request_path = substr(request_path(), strlen($purl) + 1);
+      $vsite_domain_name = variable_get('vsite_domain_name', '');
+      $request_path = request_path();
+      if (!$vsite_domain_name) {
+        $request_path = substr(request_path(), strlen($purl) + 1);
+      }
       foreach ($alter['page_title'] as $pattern => $title) {
         if (drupal_match_path($request_path, $pattern)) {
           drupal_set_title($title);
@@ -34,12 +41,17 @@ function _modos_alter_get($purl = NULL) {
  */
 function _modos_alter_query($purl) {
   $return = array();
+  //dpm($purl);
   switch ($purl) {
     case 'petersnoad':
+      $return['hide_messages'] = TRUE;
       $return['page_title'] = array(
         'publications' => t('Works'),
-        'calendar/past_events' => t('Events: Play By Play'),
+        'contact_owner' => t('Contact Me'),
       );
+      break;
+    case 'makeshiftboston':
+      $return['hide_messages'] = TRUE;
       break;
   }
   return empty($return) ? FALSE : $return;
