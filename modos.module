@@ -1,6 +1,26 @@
 <?php
 
 /**
+ *
+ */
+function modos_menu() {
+  $items = array();
+
+  $module_path = drupal_get_path('module', 'modos');
+
+  $items['modos/update/%/%'] = array(
+    'title' => t('Invoke Update by ID'),
+    'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'page callback' => 'modos_invoke_update_page',
+    'page arguments' => array(2,3),
+    'file' => 'pages.inc',
+    'file path' => "$module_path/includes/",
+  );
+  
+  return $items;
+}
+/**
  * Implements hook_page_alter().
  */
 function modos_page_alter(&$page) {
