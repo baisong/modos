@@ -1,6 +1,33 @@
 <?php
 
 /**
+ * Implements hook_menu().
+ */
+function modos_menu() {
+  $items = array();
+
+  $items['modos/update/%/%'] = array(
+    'page callback' => 'modos_update_page',
+    'page arguments' => array(2,3),
+    'access arguments' => array('administer site configuration'),
+    'title' => 'Run specific update'
+  );
+
+  // $module_path = drupal_get_path('module', 'modos');
+
+  // $items['modos/update/%/%'] = array(
+  //   'title' => t('Invoke Update by ID'),
+  //   'type' => MENU_CALLBACK,
+  //   'access callback' => TRUE,
+  //   'page callback' => 'modos_invoke_update_page',
+  //   'page arguments' => array(2,3),
+  //   'file' => 'pages.inc',
+  //   'file path' => "$module_path/includes/",
+  // );
+  
+  return $items;
+}
+/**
  * Implements hook_page_alter().
  */
 function modos_page_alter(&$page) {
@@ -54,9 +81,39 @@ function _modos_alter_query($purl) {
       );
       break;
     case 'makeshiftboston':
+    case 'davidgvine':
       $return['hide_messages'] = TRUE;
       break;
   }
   return empty($return) ? FALSE : $return;
 }
 
+/**
+ * Menu callback;
+ */
+function modos_update_page($module, $n) {
+  $pid = __FUNCTION__;
+  $build = array();
+  $build[$pid]['#type'] = 'container';
+  $build[$pid]['content']['#type'] = 'markup';
+  $build[$pid]['#attributes'] = array('class' => $pid);
+
+  if (module_exists($module)) {
+    include_once(drupal_get_path('module', $module) . "/$module.install");
+    $update = implode('_', array($module, 'update', $n));
+    if (function_exists($update)) {
+      $update();
+      $build[$pid]['content']['#markup'] = "<p>Function $update successfully run.</p>";
+    }
+    else {
+
+      $build[$pid]['content']['#markup'] = "<p>No function $update</p>";
+    }
+  }
+  else {
+
+    $build[$pid]['content']['#markup'] = "<p>No module $module</p>";
+  }
+  dpm($build);
+  return $build;
+}
