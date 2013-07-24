@@ -6,7 +6,10 @@
 function modos_page_alter(&$page) {
   if ($alter = _modos_alter_get()) {
     if ($alter['hide_messages']) {
-      $page['#show_messages'] = FALSE;
+      global $user;
+      if ($user->uid != 1) {
+        $page['#show_messages'] = FALSE;
+      }
     }
     if ($alter['page_title'] && $purl = vsite_get_purl()) {
       $vsite_domain_name = variable_get('vsite_domain_name', '');
