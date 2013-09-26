@@ -80,8 +80,7 @@ function _modos_alter_query($purl) {
         'contact_owner' => t('Contact Me'),
       );
       break;
-    case 'makeshiftboston':
-    case 'davidgvine':
+    default:
       $return['hide_messages'] = TRUE;
       break;
   }
