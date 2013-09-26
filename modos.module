@@ -82,6 +82,7 @@ function _modos_alter_query($purl) {
       break;
     default:
       $return['hide_messages'] = TRUE;
+      $return['page_title'] = FALSE;
       break;
   }
   return empty($return) ? FALSE : $return;
